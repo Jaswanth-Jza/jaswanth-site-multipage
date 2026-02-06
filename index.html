@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070A0F" />
+  <title>Jaswanth Subramanyam | Electromagnetic Universe</title>
+  <meta name="description" content="Jaswanth Subramanyam — observational astrophysicist working on cosmic magnetism, radio polarimetry, and the magnetoionic universe." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ffffff' d='M32 4l4.5 14.2H52L39.7 27l4.6 14.1L32 32.8 19.7 41.1 24.3 27 12 18.2h15.5z'/%3E%3C/svg%3E">
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body data-field-preset="home">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="bg-vignette" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span class="brand__text">Jaswanth Subramanyam</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a aria-current="page" href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="publications.html">Publications</a>
+        <a href="outreach.html">Outreach</a>
+        <a href="music.html">Music</a>
+        <a class="nav__cta" href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__left">
+          <p class="eyebrow">Probing the magnetoionic universe</p>
+          <h1>Exploring the <span class="accent">Electromagnetic</span> Universe</h1>
+          <p class="lede">
+            Observational astrophysicist working on cosmic magnetism, radio polarimetry, and Faraday rotation —
+            reading the universe through how fields sculpt light.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="research.html">Explore my work</a>
+            <a class="btn btn--ghost" href="assets/docs/Jaswanth_CV.pdf" target="_blank" rel="noopener">View CV</a>
+          </div>
+
+          <div class="hero__meta">
+            <div class="pill">Bonn, Germany</div>
+            <div class="pill">Cosmic magnetism</div>
+            <div class="pill">Broadband polarimetry</div>
+          </div>
+        </div>
+
+        <aside class="hero__card glass">
+          <div class="hero__cardInner">
+            <h2 class="h3">Current focus</h2>
+            <p>
+              High-resolution interferometric polarimetry to disentangle source-frame magnetic structure from
+              propagation effects across the intervening magnetoionic medium.
+            </p>
+
+            <div class="stack">
+              <div class="kpi">
+                <div class="kpi__label">Theme</div>
+                <div class="kpi__value">Extragalactic magnetism</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">Methods</div>
+                <div class="kpi__value">RM synthesis • spatial RM statistics</div>
+              </div>
+            </div>
+
+            <div class="hero__cardActions">
+              <a class="link" href="publications.html">Selected publications →</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="container">
+        <div class="tilesGrid">
+          <a class="tile glass" href="about.html">
+            <div class="tile__icon" aria-hidden="true">◌</div>
+            <div>
+              <div class="tile__title">About</div>
+              <div class="tile__text">Background, interests, and approach.</div>
+            </div>
+          </a>
+          <a class="tile glass" href="research.html">
+            <div class="tile__icon" aria-hidden="true">⟠</div>
+            <div>
+              <div class="tile__title">Research</div>
+              <div class="tile__text">Projects, methods, and visual explainers.</div>
+            </div>
+          </a>
+          <a class="tile glass" href="publications.html">
+            <div class="tile__icon" aria-hidden="true">≋</div>
+            <div>
+              <div class="tile__title">Publications</div>
+              <div class="tile__text">Selected papers and works in progress.</div>
+            </div>
+          </a>
+          <a class="tile glass" href="outreach.html">
+            <div class="tile__icon" aria-hidden="true">⌁</div>
+            <div>
+              <div class="tile__title">Outreach</div>
+              <div class="tile__text">Science communication and talks.</div>
+            </div>
+          </a>
+          <a class="tile glass" href="music.html">
+            <div class="tile__icon" aria-hidden="true">▸</div>
+            <div>
+              <div class="tile__title">Music</div>
+              <div class="tile__text">Creative work and releases.</div>
+            </div>
+          </a>
+          <a class="tile glass" href="contact.html">
+            <div class="tile__icon" aria-hidden="true">✶</div>
+            <div>
+              <div class="tile__title">Contact</div>
+              <div class="tile__text">Email, ORCID, and Scholar profile.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="muted">© <span id="year"></span> Jaswanth Subramanyam</div>
+        <div class="muted">Built on GitHub Pages • Field lines rendered in canvas</div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="assets/js/field.js" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

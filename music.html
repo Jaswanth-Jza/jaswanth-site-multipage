@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070A0F" />
+  <title>Music | Jaswanth Subramanyam</title>
+  <meta name="description" content="Music — releases and videos from Jaswanth." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ffffff' d='M32 4l4.5 14.2H52L39.7 27l4.6 14.1L32 32.8 19.7 41.1 24.3 27 12 18.2h15.5z'/%3E%3C/svg%3E">
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body data-field-preset="music">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="bg-vignette" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span class="brand__text">Jaswanth Subramanyam</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="publications.html">Publications</a>
+        <a href="outreach.html">Outreach</a>
+        <a aria-current="page" href="music.html">Music</a>
+        <a class="nav__cta" href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="pageTitle">
+      <div class="container">
+        <h1 class="pageTitle__h1">Music</h1>
+        <p class="muted pageTitle__lede">A creative thread alongside my research — releases and visuals.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid2">
+          <div class="glass pad">
+            <h3 class="h4">Featured music video</h3>
+            <p class="muted">Latest visual — embedded here for quick viewing.</p>
+
+            <div class="yt">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/v7FUreSRAfk"
+                title="Music video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+
+            <div class="outreachLinks">
+              <a class="link" href="https://youtu.be/v7FUreSRAfk?si=lxiv6Qi-RnIHkI6m" target="_blank" rel="noopener">
+                Watch on YouTube →
+              </a>
+            </div>
+          </div>
+
+          <div class="glass pad">
+            <h3 class="h4">YouTube channel</h3>
+            <p class="muted">Full catalogue, upcoming uploads, and behind-the-scenes.</p>
+
+            <div class="channelBox">
+              <div class="channelRow">
+                <div class="channelBadge" aria-hidden="true">▶</div>
+                <div>
+                  <div class="channelTitle">@jaswanthjza</div>
+                  <div class="muted channelMeta">YouTube channel</div>
+                </div>
+              </div>
+
+              <div class="channelActions">
+                <a class="btn btn--ghost" href="https://www.youtube.com/@jaswanthjza" target="_blank" rel="noopener">
+                  Visit channel
+                </a>
+              </div>
+            </div>
+
+            <div class="glass pad" style="margin-top:14px;">
+              <h3 class="h4">Next</h3>
+              <p class="muted" style="margin:0;">
+                If you want, we can add a “Latest uploads” playlist embed here, or a releases grid.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="muted">© <span id="year"></span> Jaswanth Subramanyam</div>
+        <div class="muted">Built on GitHub Pages • Field lines rendered in canvas</div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="assets/js/field.js" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
