@@ -448,3 +448,64 @@ h1{
 }
 
 .outreachLinks{ margin-top: 10px; }
+
+/* Mobile nav toggle (hamburger) */
+.navToggle{
+  display:none;
+  width:44px;
+  height:44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+}
+
+.navToggle__bar{
+  display:block;
+  width:18px;
+  height:2px;
+  background: rgba(233,238,247,.88);
+  border-radius: 999px;
+}
+
+/* Desktop nav stays the same */
+@media (max-width: 860px){
+  .topbar__inner{ align-items:center; }
+  .navToggle{ display:inline-flex; }
+
+  /* Collapse nav into a dropdown panel */
+  .nav{
+    position: absolute;
+    right: 24px;
+    top: 72px;
+    width: min(260px, calc(100vw - 48px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(7,10,15,.92);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 18px 50px rgba(0,0,0,.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    display: none; /* closed by default */
+  }
+
+  .nav[data-open="true"]{ display:flex; }
+
+  .nav a{
+    padding: 12px 12px;
+    border-radius: 12px;
+    font-size: 14.5px;
+  }
+
+  /* Make the CTA button full width */
+  .nav__cta{
+    text-align: center;
+  }
+}
