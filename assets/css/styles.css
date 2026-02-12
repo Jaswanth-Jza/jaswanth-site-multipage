@@ -537,3 +537,59 @@ h1{
     text-align: center;
   }
 }
+.fieldUI{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2000;
+  width: min(320px, calc(100vw - 32px));
+  pointer-events: auto;
+}
+
+.fieldUI__toggle{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(7,10,15,.72);
+  color: rgba(233,238,247,.92);
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.fieldUI__panel{
+  display: none;
+  margin-top: 10px;
+  padding: 12px 12px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(7,10,15,.78);
+  box-shadow: 0 18px 50px rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.fieldUI[data-open="true"] .fieldUI__panel{ display:block; }
+
+.fieldUI__row{
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+  color: rgba(233,238,247,.86);
+}
+
+.fieldUI__row input[type="range"]{
+  width: 100%;
+}
+
+.fieldUI__note{
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(233,238,247,.62);
+  line-height: 1.35;
+}
