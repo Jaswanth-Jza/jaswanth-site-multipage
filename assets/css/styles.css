@@ -593,3 +593,19 @@ h1{
   color: rgba(233,238,247,.62);
   line-height: 1.35;
 }
+/* Magnetoionic controls must sit above everything and receive clicks */
+.fieldUI{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+.fieldUI *{
+  pointer-events: auto;
+}
+
+.fieldUI__toggle{
+  cursor: pointer;
+}
