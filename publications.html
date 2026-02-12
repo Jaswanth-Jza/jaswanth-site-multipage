@@ -31,6 +31,48 @@
 </picture>
 
   <canvas id="field" aria-hidden="true"></canvas>
+  <div class="fieldUI" data-open="false">
+  <button class="fieldUI__toggle" type="button" aria-expanded="false">
+    Magnetoionic Controls
+  </button>
+
+  <div class="fieldUI__panel">
+    <label class="fieldUI__row">
+      <span>B⊥ strength</span>
+      <input type="range" min="0.06" max="0.20" step="0.01" value="0.12" data-field="bperp">
+    </label>
+
+    <label class="fieldUI__row">
+      <span>Turbulence</span>
+      <input type="range" min="8" max="35" step="1" value="20" data-field="turb">
+    </label>
+
+    <label class="fieldUI__row">
+      <span>Coherence scale</span>
+      <input type="range" min="0.6" max="2.0" step="0.05" value="1.0" data-field="coh">
+    </label>
+
+    <label class="fieldUI__row">
+      <span>Wave activity</span>
+      <input type="range" min="0.0004" max="0.0018" step="0.00005" value="0.00095" data-field="speed">
+    </label>
+
+    <label class="fieldUI__row">
+      <span>Emitting region size</span>
+      <input type="range" min="180" max="700" step="10" value="420" data-field="src">
+    </label>
+
+    <label class="fieldUI__row">
+      <span>Shear / drift</span>
+      <input type="range" min="0.00" max="0.35" step="0.01" value="0.18" data-field="shear">
+    </label>
+
+    <div class="fieldUI__note">
+      Visual metaphor for a magnetoionic medium (not a numerical simulation).
+    </div>
+  </div>
+</div>
+
   <div class="bg-vignette" aria-hidden="true"></div>
 
   <header class="topbar">
@@ -47,14 +89,15 @@
 </button>
 
 <nav id="site-nav" class="nav" aria-label="Primary" data-open="false">
-  <a aria-current="page" href="index.html">Home</a>
+  <a href="index.html">Home</a>
   <a href="about.html">About</a>
   <a href="research.html">Research</a>
-  <a href="publications.html">Publications</a>
+  <a aria-current="page" href="publications.html">Publications</a>
   <a href="outreach.html">Outreach</a>
   <a href="music.html">Music</a>
   <a class="nav__cta" href="contact.html">Contact</a>
 </nav>
+
 
     </div>
   </header>
