@@ -44,6 +44,7 @@
   if (ui.speed != null){
     state.speed = clamp(ui.speed, 0.0002, 0.003);
   }
+boostRadius: 420,  
 
 // Distortion radius -> how far cursor bends the grid
 if (ui.src != null){
