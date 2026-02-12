@@ -31,7 +31,6 @@
 }
 
 /* Everything else must sit above both */
-header.topbar,
 main,
 footer {
   position: relative;
