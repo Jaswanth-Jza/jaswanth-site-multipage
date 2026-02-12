@@ -116,8 +116,8 @@ a:hover{ text-decoration:underline; text-underline-offset: 3px; }
 .nav a{ color: rgba(233,238,247,.85); font-size:14px; padding:10px 8px; border-radius:10px; }
 .nav a:hover{ background: rgba(255,255,255,.06); text-decoration:none; }
 .nav__cta{
-  border:1px solid rgba(83,214,255,.35);
-  background: rgba(83,214,255,.10);
+  border:1px solid transparent;
+  background: transparent;
 }
 
 /* Active nav item (multi-page) */
@@ -529,13 +529,23 @@ h1{
   width: 100%;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(7,10,15,.72);
-  color: rgba(233,238,247,.92);
+  border: 1px solid rgba(83,214,255,.35);
+  background: linear-gradient(180deg, rgba(83,214,255,.22), rgba(83,214,255,.12));
+  color: rgba(233,238,247,.98);
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 12px 30px rgba(83,214,255,.14), inset 0 1px 0 rgba(255,255,255,.12);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+.fieldUI__toggle:hover{
+  background: linear-gradient(180deg, rgba(83,214,255,.28), rgba(83,214,255,.16));
+}
+
+.fieldUI__toggle:focus-visible{
+  outline: 2px solid rgba(83,214,255,.65);
+  outline-offset: 2px;
 }
 
 .fieldUI__panel{

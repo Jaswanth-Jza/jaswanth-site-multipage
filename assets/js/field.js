@@ -316,7 +316,7 @@
     // Pass 2: cursor-local brightening with radial falloff tied to distortion radius.
     const cursorX = state.pointer.x * state.w;
     const cursorY = state.pointer.y * state.h;
-    const radius = Math.max(100, state.pointerRadius);
+    const radius = state.pointerRadius * 0.5;
     const extraH = clamp(CURSOR_FIELD_ALPHA - state.baseAlphaH, 0, 0.35);
     const extraV = clamp(CURSOR_FIELD_ALPHA - state.baseAlphaV, 0, 0.35);
 
