@@ -2,7 +2,7 @@
   Electromagnetic field-line background (canvas)
   - Animated mesh / field lines (uniform, no central warp)
   - Cursor brightening (radial boost)
-  - Subtle mouse-reactive Lorentz-like drift (can be toned down)
+  - Subtle mouse-reactive Lorentz-like drift
   - HiDPI-aware and responsive
   - Respects prefers-reduced-motion
 */
@@ -17,46 +17,6 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  function applyUI(state){
-  const ui = window.__FIELD_UI__;
-  if(!ui) return;
-
-  // B⊥ strength -> baseline alpha everywhere
-  if (ui.bperp != null){
-    const a = clamp(ui.bperp, 0.04, 0.30);
-    state.baseAlphaH = a;
-    state.baseAlphaV = a;
-  }
-
-  // Turbulence -> wave amplitudes
-  if (ui.turb != null){
-    const t = clamp(ui.turb, 6, 40);
-    state.amp  = t;
-    state.amp2 = t * 0.8;
-  }
-
-  // Coherence scale -> spatial frequency multiplier
-  if (ui.coh != null){
-    state.kScale = clamp(ui.coh, 0.4, 3.0);
-  }
-
-  // Wave activity -> time speed
-  if (ui.speed != null){
-    state.speed = clamp(ui.speed, 0.0002, 0.003);
-  }
-boostRadius: 420,  
-
-// Distortion radius -> how far cursor bends the grid
-if (ui.src != null){
-  state.pointerRadius = clamp(ui.src, 120, 900);
-}
-
-  // Shear / drift -> mouse deformation
-  if (ui.shear != null){
-    state.pointerStrength = clamp(ui.shear, 0.0, 0.6);
-  }
-}
-
 
   const state = {
     w: 0,
@@ -70,16 +30,16 @@ if (ui.src != null){
     vLines: 22,
     step: 1,
 
-    // Wave parameters (keep modest for uniform feel)
-    kScale: 1.0, // coherence scale multiplier for wave spatial frequency
+    // Wave parameters
+    kScale: 1.0, // coherence scale multiplier
     amp: 20,
     amp2: 16,
     speed: 0.00095,
 
-    // Pointer interaction (deformation + brightening)
+    // Pointer interaction (geometry distortion)
     pointer: { x: 0.5, y: 0.45, vx: 0, vy: 0 },
-    pointerRadius: 360,
-    pointerStrength: 0.18,   // deformation strength
+    pointerRadius: 360,    // <-- distortion radius (now controlled by slider)
+    pointerStrength: 0.18, // <-- distortion strength (shear slider)
     pointerDamping: 0.90,
     pointerFollow: 0.18,
 
@@ -87,14 +47,11 @@ if (ui.src != null){
     baseAlphaH: 0.12,
     baseAlphaV: 0.12,
     boostAlpha: 0.12,
-    boostRadius: 420,
+    boostRadius: 420,      // <-- brightening radius (fixed)
     boostVelGain: 0.06,
-
-    // Turn OFF any “lens” warp completely
-    warpStrength: 0.0,
   };
 
-  // Optional per-page presets. Set on <body data-field-preset="...">.
+  // Optional per-page presets
   const presetName = (document.body?.dataset?.fieldPreset) || 'home';
   const presets = {
     home: { hLines: 46, vLines: 22, amp: 20, amp2: 16 },
@@ -111,6 +68,45 @@ if (ui.src != null){
     Object.assign(state, p);
   })();
 
+  function applyUI() {
+    const ui = window.__FIELD_UI__;
+    if (!ui) return;
+
+    // B⊥ strength -> baseline alpha everywhere
+    if (ui.bperp != null) {
+      const a = clamp(ui.bperp, 0.04, 0.30);
+      state.baseAlphaH = a;
+      state.baseAlphaV = a;
+    }
+
+    // Turbulence -> wave amplitudes
+    if (ui.turb != null) {
+      const t = clamp(ui.turb, 6, 40);
+      state.amp = t;
+      state.amp2 = t * 0.8;
+    }
+
+    // Coherence scale -> spatial frequency multiplier
+    if (ui.coh != null) {
+      state.kScale = clamp(ui.coh, 0.4, 3.0);
+    }
+
+    // Wave activity -> time speed
+    if (ui.speed != null) {
+      state.speed = clamp(ui.speed, 0.0002, 0.003);
+    }
+
+    // Distortion radius -> how far cursor bends the grid
+    if (ui.src != null) {
+      state.pointerRadius = clamp(ui.src, 120, 900);
+    }
+
+    // Shear / drift -> distortion strength
+    if (ui.shear != null) {
+      state.pointerStrength = clamp(ui.shear, 0.0, 0.6);
+    }
+  }
+
   function resize() {
     state.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     state.w = Math.floor(window.innerWidth);
@@ -121,7 +117,6 @@ if (ui.src != null){
     canvas.style.width = state.w + 'px';
     canvas.style.height = state.h + 'px';
 
-    // Draw in CSS pixels
     ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
   }
 
@@ -152,7 +147,6 @@ if (ui.src != null){
     ctx.clearRect(0, 0, state.w, state.h);
   }
 
-  // Field displacement model (NO central warp)
   function displacedPoint(ix, iy, t) {
     const x0 = (ix / (state.hLines - 1)) * state.w;
     const y0 = (iy / (state.vLines - 1)) * state.h;
@@ -160,13 +154,13 @@ if (ui.src != null){
     const nx = x0 / state.w;
     const ny = y0 / state.h;
 
-    // smooth base waves (kept subtle)
     const ks = state.kScale || 1.0;
+
     const w1 = Math.sin(((nx * 3.6 * ks) + t * 0.9) * Math.PI * 2) * state.amp * 0.2;
     const w2 = Math.sin(((ny * 2.3 * ks) + t * 1.2) * Math.PI * 2 + nx * 1.1 * ks) * state.amp2 * 0.3;
     const w3 = Math.cos(((nx * 1.4 * ks) + (ny * 1.2 * ks) + t * 0.55) * Math.PI * 2) * (state.amp2 * 0.3);
 
-    // Lorentz-like pointer drift (deformation)
+    // Cursor deformation
     const px = state.pointer.x;
     const py = state.pointer.y;
     const pdx = (nx - px) * state.w;
@@ -195,7 +189,6 @@ if (ui.src != null){
     return { x, y };
   }
 
-  // Mesh draw: uniform baseline + cursor radial brightening
   function drawMesh(t) {
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
@@ -214,7 +207,7 @@ if (ui.src != null){
       return Math.exp(-rr / (2 * r0 * r0));
     }
 
-    // Horizontal lines
+    // Horizontal
     for (let iy = 0; iy < state.vLines; iy += state.step) {
       ctx.beginPath();
       let avgBoost = 0;
@@ -231,18 +224,13 @@ if (ui.src != null){
 
       avgBoost = count ? (avgBoost / count) : 0;
 
-      const alpha = clamp(
-        state.baseAlphaH + (state.boostAlpha + velBoost) * avgBoost,
-        0,
-        0.42
-      );
-
+      const alpha = clamp(state.baseAlphaH + (state.boostAlpha + velBoost) * avgBoost, 0, 0.42);
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
       ctx.lineWidth = 1.35;
       ctx.stroke();
     }
 
-    // Vertical lines
+    // Vertical
     for (let ix = 0; ix < state.hLines; ix += state.step) {
       ctx.beginPath();
       let avgBoost = 0;
@@ -259,12 +247,7 @@ if (ui.src != null){
 
       avgBoost = count ? (avgBoost / count) : 0;
 
-      const alpha = clamp(
-        state.baseAlphaV + (state.boostAlpha + velBoost) * avgBoost,
-        0,
-        0.42
-      );
-
+      const alpha = clamp(state.baseAlphaV + (state.boostAlpha + velBoost) * avgBoost, 0, 0.42);
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
       ctx.lineWidth = 1.2;
       ctx.stroke();
@@ -280,11 +263,10 @@ if (ui.src != null){
     const speed = reduceMotion ? state.speed * 0.18 : state.speed;
     state.t += dt * speed;
 
-    // pointer velocity damping
     state.pointer.vx *= state.pointerDamping;
     state.pointer.vy *= state.pointerDamping;
 
-    applyUI(state);
+    applyUI();
     clear();
     drawMesh(state.t);
 
@@ -297,7 +279,7 @@ if (ui.src != null){
   window.addEventListener('resize', resize, { passive: true });
 
   if (reduceMotion) {
-    applyUI(state);
+    applyUI();
     clear();
     drawMesh(0.18);
   } else {
