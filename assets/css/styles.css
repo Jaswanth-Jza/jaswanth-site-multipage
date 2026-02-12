@@ -74,6 +74,22 @@ a:hover{ text-decoration:underline; text-underline-offset: 3px; }
   justify-content:space-between;
   gap:20px;
 }
+@media (max-width: 860px){
+  .topbar__inner{ position: relative; }
+
+  .nav{
+    position: absolute;
+    right: 0;
+    top: 72px;
+    z-index: 1100;         /* above hero text/cards */
+    pointer-events: auto;  /* ensure clickable */
+  }
+
+  .navToggle{
+    position: relative;
+    z-index: 1200;         /* hamburger above everything */
+  }
+}
 
 .brand{ display:flex; align-items:center; gap:12px; min-width: 210px; }
 .brand__mark{
