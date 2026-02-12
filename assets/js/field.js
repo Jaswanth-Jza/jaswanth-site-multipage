@@ -33,6 +33,10 @@
     vLines: 22,
     baseHLines: 46,
     baseVLines: 22,
+    densityScale: 1.0,
+    viewportDensityScale: 1.0,
+    densityStrokeScale: 1.0,
+    densityAlphaScale: 1.0,
     step: 1,
 
     // Wave parameters
@@ -80,14 +84,31 @@
     state.baseVLines = state.vLines;
   })();
 
+  function updateDensityVisualScales() {
+    // Keep dense meshes readable without washing out the whole canvas.
+    state.densityStrokeScale = clamp(1 / Math.pow(state.densityScale, 0.35), 0.78, 1.14);
+    state.densityAlphaScale = clamp(1 / Math.sqrt(state.densityScale), 0.74, 1.10);
+  }
+
+  function applyMeshDensity() {
+    const densityFactor = state.viewportDensityScale * state.densityScale;
+    const nextHLines = Math.min(96, Math.max(24, Math.round(state.baseHLines * densityFactor)));
+    const nextVLines = Math.min(56, Math.max(12, Math.round(state.baseVLines * densityFactor)));
+
+    const changed = nextHLines !== state.hLines || nextVLines !== state.vLines;
+    state.hLines = nextHLines;
+    state.vLines = nextVLines;
+
+    updateDensityVisualScales();
+    if (changed) ensureGridBuffers();
+  }
+
   function updateDensityForViewport() {
     const area = Math.max(1, state.w * state.h);
     const areaFactor = clamp(Math.sqrt(area / (1366 * 768)), 0.82, 1.08);
     const mobileFactor = state.w < 560 ? 0.74 : state.w < 860 ? 0.86 : 1;
-    const densityFactor = areaFactor * mobileFactor;
-
-    state.hLines = Math.max(24, Math.round(state.baseHLines * densityFactor));
-    state.vLines = Math.max(12, Math.round(state.baseVLines * densityFactor));
+    state.viewportDensityScale = areaFactor * mobileFactor;
+    applyMeshDensity();
   }
 
   function ensureGridBuffers() {
@@ -127,6 +148,15 @@
       state.speed = clamp(ui.speed, 0.0002, 0.003);
     }
 
+    // Field density -> number of lines per unit area (with caps for performance)
+    if (ui.density != null) {
+      const d = clamp(ui.density, 0.65, 1.75);
+      if (d !== state.densityScale) {
+        state.densityScale = d;
+        applyMeshDensity();
+      }
+    }
+
     // Distortion radius -> how far cursor bends the grid
     if (ui.src != null) {
       state.pointerRadius = clamp(ui.src, 120, 900);
@@ -143,7 +173,6 @@
     state.w = Math.floor(window.innerWidth);
     state.h = Math.floor(window.innerHeight);
     updateDensityForViewport();
-    ensureGridBuffers();
 
     canvas.width = Math.floor(state.w * state.dpr);
     canvas.height = Math.floor(state.h * state.dpr);
@@ -284,9 +313,9 @@
 
       avgBoost = count ? (avgBoost / count) : 0;
 
-      const alpha = clamp(state.baseAlphaH + (state.boostAlpha + velBoost) * avgBoost, 0, 0.42);
+      const alpha = clamp((state.baseAlphaH + (state.boostAlpha + velBoost) * avgBoost) * state.densityAlphaScale, 0, 0.42);
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
-      ctx.lineWidth = 1.35;
+      ctx.lineWidth = 1.35 * state.densityStrokeScale;
       ctx.stroke();
     }
 
@@ -309,9 +338,9 @@
 
       avgBoost = count ? (avgBoost / count) : 0;
 
-      const alpha = clamp(state.baseAlphaV + (state.boostAlpha + velBoost) * avgBoost, 0, 0.42);
+      const alpha = clamp((state.baseAlphaV + (state.boostAlpha + velBoost) * avgBoost) * state.densityAlphaScale, 0, 0.42);
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = 1.2 * state.densityStrokeScale;
       ctx.stroke();
     }
 
