@@ -10,6 +10,22 @@
   const btn = document.querySelector('.navToggle');
   const nav = document.getElementById('site-nav');
 
+  // Keep active nav state correct on every page.
+  if (nav) {
+    const currentPathPart = window.location.pathname.split('/').pop() || '';
+    const currentPage = (currentPathPart && currentPathPart.includes('.') ? currentPathPart : 'index.html').toLowerCase();
+    const navLinks = nav.querySelectorAll('a[href]');
+
+    navLinks.forEach((link) => {
+      const href = (link.getAttribute('href') || '').trim();
+      if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
+
+      const linkPage = href.split('/').pop().toLowerCase();
+      if (linkPage === currentPage) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
   const close = () => {
     if (!nav || !btn) return;
     nav.setAttribute('data-open', 'false');
@@ -32,14 +48,16 @@
     });
 
     nav.addEventListener('click', (e) => {
-      const t = e.target;
-      if (t && t.tagName === 'A') close();
+      if (!(e.target instanceof Element)) return;
+      const link = e.target.closest('a');
+      if (link && nav.contains(link)) close();
     });
 
     document.addEventListener('click', (e) => {
       const t = e.target;
       const isOpen = nav.getAttribute('data-open') === 'true';
       if (!isOpen) return;
+      if (!(t instanceof Node)) return;
       if (nav.contains(t) || btn.contains(t)) return;
       close();
     });

@@ -11,6 +11,7 @@
   const canvas = document.getElementById('field');
   if (!canvas) return;
   const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return;
 
   const reduceMotion =
     window.matchMedia &&
@@ -24,10 +25,14 @@
     dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)),
     t: 0,
     last: performance.now(),
+    rafId: 0,
+    running: false,
 
     // Mesh density
     hLines: 46,
     vLines: 22,
+    baseHLines: 46,
+    baseVLines: 22,
     step: 1,
 
     // Wave parameters
@@ -49,6 +54,11 @@
     boostAlpha: 0.12,
     boostRadius: 420,      // <-- brightening radius (fixed)
     boostVelGain: 0.06,
+
+    // Reused buffers for per-frame geometry and brightness calculations.
+    gridX: null,
+    gridY: null,
+    gridBoost: null,
   };
 
   // Optional per-page presets
@@ -66,7 +76,28 @@
   (function applyPreset() {
     const p = presets[presetName] || presets.home;
     Object.assign(state, p);
+    state.baseHLines = state.hLines;
+    state.baseVLines = state.vLines;
   })();
+
+  function updateDensityForViewport() {
+    const area = Math.max(1, state.w * state.h);
+    const areaFactor = clamp(Math.sqrt(area / (1366 * 768)), 0.82, 1.08);
+    const mobileFactor = state.w < 560 ? 0.74 : state.w < 860 ? 0.86 : 1;
+    const densityFactor = areaFactor * mobileFactor;
+
+    state.hLines = Math.max(24, Math.round(state.baseHLines * densityFactor));
+    state.vLines = Math.max(12, Math.round(state.baseVLines * densityFactor));
+  }
+
+  function ensureGridBuffers() {
+    const total = state.hLines * state.vLines;
+    if (state.gridX && state.gridX.length === total) return;
+
+    state.gridX = new Float32Array(total);
+    state.gridY = new Float32Array(total);
+    state.gridBoost = new Float32Array(total);
+  }
 
   function applyUI() {
     const ui = window.__FIELD_UI__;
@@ -111,6 +142,8 @@
     state.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     state.w = Math.floor(window.innerWidth);
     state.h = Math.floor(window.innerHeight);
+    updateDensityForViewport();
+    ensureGridBuffers();
 
     canvas.width = Math.floor(state.w * state.dpr);
     canvas.height = Math.floor(state.h * state.dpr);
@@ -118,6 +151,12 @@
     canvas.style.height = state.h + 'px';
 
     ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+
+    if (reduceMotion) {
+      applyUI();
+      clear();
+      drawMesh(0.18);
+    }
   }
 
   function onPointerMove(ev) {
@@ -147,78 +186,99 @@
     ctx.clearRect(0, 0, state.w, state.h);
   }
 
-  function displacedPoint(ix, iy, t) {
-    const x0 = (ix / (state.hLines - 1)) * state.w;
-    const y0 = (iy / (state.vLines - 1)) * state.h;
+  function populateGrid(t) {
+    ensureGridBuffers();
 
-    const nx = x0 / state.w;
-    const ny = y0 / state.h;
-
+    const invH = state.hLines > 1 ? 1 / (state.hLines - 1) : 1;
+    const invV = state.vLines > 1 ? 1 / (state.vLines - 1) : 1;
     const ks = state.kScale || 1.0;
 
-    const w1 = Math.sin(((nx * 3.6 * ks) + t * 0.9) * Math.PI * 2) * state.amp * 0.2;
-    const w2 = Math.sin(((ny * 2.3 * ks) + t * 1.2) * Math.PI * 2 + nx * 1.1 * ks) * state.amp2 * 0.3;
-    const w3 = Math.cos(((nx * 1.4 * ks) + (ny * 1.2 * ks) + t * 0.55) * Math.PI * 2) * (state.amp2 * 0.3);
-
-    // Cursor deformation
     const px = state.pointer.x;
     const py = state.pointer.y;
-    const pdx = (nx - px) * state.w;
-    const pdy = (ny - py) * state.h;
-    const pr = Math.sqrt(pdx * pdx + pdy * pdy);
-    const pInfluence = Math.exp(-(pr * pr) / (2 * state.pointerRadius * state.pointerRadius));
-
     const pvx = state.pointer.vx;
     const pvy = state.pointer.vy;
     const pvMag = Math.sqrt(pvx * pvx + pvy * pvy);
+    const velGain = clamp(pvMag * 18, 0, 1.8);
 
     const perpX = -pvy;
     const perpY = pvx;
 
-    const trX = pr < 1e-3 ? 0 : (-pdy / pr);
-    const trY = pr < 1e-3 ? 0 : (pdx / pr);
+    const pointerDen = 2 * state.pointerRadius * state.pointerRadius;
+    const boostPx = px * state.w;
+    const boostPy = py * state.h;
+    const boostDen = 2 * state.boostRadius * state.boostRadius;
 
-    const driftGain = state.pointerStrength * pInfluence * clamp(pvMag * 18, 0, 1.8);
+    let idx = 0;
+    for (let iy = 0; iy < state.vLines; iy++) {
+      const ny = iy * invV;
+      const y0 = ny * state.h;
 
-    const driftPx = (perpX * 85 + trX * 55) * driftGain;
-    const driftPy = (perpY * 55 + trY * 85) * driftGain;
+      for (let ix = 0; ix < state.hLines; ix++) {
+        const nx = ix * invH;
+        const x0 = nx * state.w;
 
-    const x = x0 + (w1 + w3) * 0.35 + driftPx;
-    const y = y0 + (w2 + w3) * 0.55 + driftPy;
+        const w1 = Math.sin(((nx * 3.6 * ks) + t * 0.9) * Math.PI * 2) * state.amp * 0.2;
+        const w2 = Math.sin(((ny * 2.3 * ks) + t * 1.2) * Math.PI * 2 + nx * 1.1 * ks) * state.amp2 * 0.3;
+        const w3 = Math.cos(((nx * 1.4 * ks) + (ny * 1.2 * ks) + t * 0.55) * Math.PI * 2) * (state.amp2 * 0.3);
 
-    return { x, y };
+        const pdx = (nx - px) * state.w;
+        const pdy = (ny - py) * state.h;
+        const pr2 = pdx * pdx + pdy * pdy;
+        const pInfluence = Math.exp(-pr2 / pointerDen);
+
+        const invPr = pr2 > 1e-6 ? 1 / Math.sqrt(pr2) : 0;
+        const trX = -pdy * invPr;
+        const trY = pdx * invPr;
+
+        const driftGain = state.pointerStrength * pInfluence * velGain;
+        const driftPx = (perpX * 85 + trX * 55) * driftGain;
+        const driftPy = (perpY * 55 + trY * 85) * driftGain;
+
+        const x = x0 + (w1 + w3) * 0.35 + driftPx;
+        const y = y0 + (w2 + w3) * 0.55 + driftPy;
+
+        state.gridX[idx] = x;
+        state.gridY[idx] = y;
+
+        const dx = x - boostPx;
+        const dy = y - boostPy;
+        state.gridBoost[idx] = Math.exp(-(dx * dx + dy * dy) / boostDen);
+        idx++;
+      }
+    }
   }
 
   function drawMesh(t) {
+    populateGrid(t);
+
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
 
-    const px = state.pointer.x * state.w;
-    const py = state.pointer.y * state.h;
-    const r0 = state.boostRadius;
+    const hLines = state.hLines;
+    const vLines = state.vLines;
+    const step = state.step;
+    const gridX = state.gridX;
+    const gridY = state.gridY;
+    const gridBoost = state.gridBoost;
 
     const v = Math.sqrt(state.pointer.vx * state.pointer.vx + state.pointer.vy * state.pointer.vy);
     const velBoost = clamp(v * 10, 0, 1) * state.boostVelGain;
 
-    function boostAt(x, y) {
-      const dx = x - px;
-      const dy = y - py;
-      const rr = dx * dx + dy * dy;
-      return Math.exp(-rr / (2 * r0 * r0));
-    }
-
     // Horizontal
-    for (let iy = 0; iy < state.vLines; iy += state.step) {
+    for (let iy = 0; iy < vLines; iy += step) {
       ctx.beginPath();
       let avgBoost = 0;
       let count = 0;
+      const rowOffset = iy * hLines;
 
-      for (let ix = 0; ix < state.hLines; ix += state.step) {
-        const p = displacedPoint(ix, iy, t);
-        if (ix === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
+      for (let ix = 0; ix < hLines; ix += step) {
+        const idx = rowOffset + ix;
+        const x = gridX[idx];
+        const y = gridY[idx];
+        if (ix === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
 
-        avgBoost += boostAt(p.x, p.y);
+        avgBoost += gridBoost[idx];
         count++;
       }
 
@@ -231,17 +291,19 @@
     }
 
     // Vertical
-    for (let ix = 0; ix < state.hLines; ix += state.step) {
+    for (let ix = 0; ix < hLines; ix += step) {
       ctx.beginPath();
       let avgBoost = 0;
       let count = 0;
 
-      for (let iy = 0; iy < state.vLines; iy += state.step) {
-        const p = displacedPoint(ix, iy, t);
-        if (iy === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
+      for (let iy = 0; iy < vLines; iy += step) {
+        const idx = iy * hLines + ix;
+        const x = gridX[idx];
+        const y = gridY[idx];
+        if (iy === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
 
-        avgBoost += boostAt(p.x, p.y);
+        avgBoost += gridBoost[idx];
         count++;
       }
 
@@ -257,6 +319,8 @@
   }
 
   function tick(now) {
+    if (!state.running) return;
+
     const dt = Math.min(50, now - state.last);
     state.last = now;
 
@@ -269,20 +333,46 @@
     applyUI();
     clear();
     drawMesh(state.t);
+    state.rafId = requestAnimationFrame(tick);
+  }
 
-    if (!reduceMotion) requestAnimationFrame(tick);
+  function start() {
+    if (reduceMotion || state.running || document.hidden) return;
+    state.running = true;
+    state.last = performance.now();
+    state.rafId = requestAnimationFrame(tick);
+  }
+
+  function stop() {
+    if (!state.running) return;
+    state.running = false;
+    if (!state.rafId) return;
+    cancelAnimationFrame(state.rafId);
+    state.rafId = 0;
   }
 
   // Init
   resize();
   installPointer();
-  window.addEventListener('resize', resize, { passive: true });
+  let resizeRafId = 0;
+  window.addEventListener('resize', () => {
+    if (resizeRafId) return;
+    resizeRafId = requestAnimationFrame(() => {
+      resizeRafId = 0;
+      resize();
+    });
+  }, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (reduceMotion) return;
+    if (document.hidden) stop();
+    else start();
+  });
 
   if (reduceMotion) {
     applyUI();
     clear();
     drawMesh(0.18);
   } else {
-    requestAnimationFrame(tick);
+    start();
   }
 })();
