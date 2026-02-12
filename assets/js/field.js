@@ -19,7 +19,7 @@
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const BASE_FIELD_ALPHA = 0.05;   // quarter of prior slider max (0.20)
-  const CURSOR_FIELD_ALPHA = 0.28; // boosted cursor peak brightness
+  const CURSOR_FIELD_ALPHA = 0.40; // boosted cursor peak brightness
 
   const state = {
     w: 0,
