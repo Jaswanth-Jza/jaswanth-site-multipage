@@ -1,4 +1,4 @@
-// Site-wide helpers: footer year + mobile nav toggle + (home-only) field controls
+// Site-wide helpers: footer year + mobile nav + field controls
 (() => {
   // Footer year
   const y = document.getElementById('year');
@@ -24,25 +24,18 @@
     btn.setAttribute('aria-label', 'Close menu');
   };
 
-  const toggle = () => {
-    if (!nav || !btn) return;
-    const isOpen = nav.getAttribute('data-open') === 'true';
-    if (isOpen) close(); else open();
-  };
-
   if (btn && nav) {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      toggle();
+      const isOpen = nav.getAttribute('data-open') === 'true';
+      if (isOpen) close(); else open();
     });
 
-    // Close when clicking a nav link
     nav.addEventListener('click', (e) => {
       const t = e.target;
       if (t && t.tagName === 'A') close();
     });
 
-    // Close when clicking outside
     document.addEventListener('click', (e) => {
       const t = e.target;
       const isOpen = nav.getAttribute('data-open') === 'true';
@@ -51,19 +44,17 @@
       close();
     });
 
-    // Close on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') close();
     });
 
-    // Ensure nav is closed on resize back to desktop
     window.addEventListener('resize', () => {
       if (window.innerWidth > 860) close();
     }, { passive: true });
   }
 
   // -----------------------
-  // Field UI controls (Home only — runs only if .fieldUI exists)
+  // Field UI controls
   // -----------------------
   (function () {
     const root = document.querySelector('.fieldUI');
