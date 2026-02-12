@@ -45,10 +45,10 @@
     state.speed = clamp(ui.speed, 0.0002, 0.003);
   }
 
-  // Emitting region size -> cursor brightening radius
-  if (ui.src != null){
-    state.boostRadius = clamp(ui.src, 120, 900);
-  }
+// Distortion radius -> how far cursor bends the grid
+if (ui.src != null){
+  state.pointerRadius = clamp(ui.src, 120, 900);
+}
 
   // Shear / drift -> mouse deformation
   if (ui.shear != null){
