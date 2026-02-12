@@ -51,6 +51,40 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
+// Field UI controls -> updates window.__FIELD_UI__ for field.js
+(function(){
+  const root = document.querySelector('.fieldUI');
+  if(!root) return;
+
+  const toggle = root.querySelector('.fieldUI__toggle');
+  const panel = root.querySelector('.fieldUI__panel');
+  const inputs = root.querySelectorAll('input[data-field]');
+
+  window.__FIELD_UI__ = window.__FIELD_UI__ || {};
+
+  function setOpen(open){
+    root.dataset.open = open ? "true" : "false";
+    toggle.setAttribute('aria-expanded', open ? "true" : "false");
+  }
+
+  toggle.addEventListener('click', () => {
+    const open = root.dataset.open === "true";
+    setOpen(!open);
+  });
+
+  inputs.forEach(inp => {
+    const key = inp.dataset.field;
+    const val = parseFloat(inp.value);
+    window.__FIELD_UI__[key] = val;
+
+    inp.addEventListener('input', () => {
+      window.__FIELD_UI__[key] = parseFloat(inp.value);
+    });
+  });
+
+  // start collapsed by default
+  setOpen(false);
+})();
 
   // Ensure nav is closed when resizing from desktop to mobile or back
   window.addEventListener('resize', () => {
