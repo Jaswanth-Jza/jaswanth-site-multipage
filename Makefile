@@ -1,4 +1,4 @@
 .PHONY: validate
 
 validate:
-	./scripts/validate.sh
+	bash ./scripts/validate.sh

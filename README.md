@@ -21,4 +21,4 @@ then visit `http://localhost:8000`.
 ## Acknowledgements
 
 - Some debugging/refactoring iterations were assisted by AI coding tools (ChatGPT); all changes were reviewed and tested manually.
-- Slider-based “Field Controls” UI concept: credit to a Lucia Gebauer Werner(idea).
+- Slider-based “Field Controls” UI concept credit: Lucia Gebauer Werner.

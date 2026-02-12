@@ -385,6 +385,16 @@ h1{
 
 .footer{ padding: 28px 0 34px; border-top: 1px solid rgba(255,255,255,.06); }
 .footer__inner{ display:flex; justify-content:space-between; gap: 16px; flex-wrap:wrap; }
+.footer__readme{
+  color: inherit;
+  opacity: 0.8;
+  text-decoration: none;
+}
+.footer__readme:hover{
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 /* Responsiveness */
 @media (max-width: 980px){

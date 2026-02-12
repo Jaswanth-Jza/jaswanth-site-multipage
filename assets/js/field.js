@@ -60,7 +60,6 @@
     // Reused buffers for per-frame geometry and brightness calculations.
     gridX: null,
     gridY: null,
-    gridBoost: null,
   };
 
   // Optional per-page presets
@@ -114,7 +113,6 @@
 
     state.gridX = new Float32Array(total);
     state.gridY = new Float32Array(total);
-    state.gridBoost = new Float32Array(total);
   }
 
   function applyUI() {
@@ -255,8 +253,6 @@
 
         state.gridX[idx] = x;
         state.gridY[idx] = y;
-        // Brightness uses the same radial influence as distortion.
-        state.gridBoost[idx] = pInfluence;
         idx++;
       }
     }
@@ -273,57 +269,76 @@
     const step = state.step;
     const gridX = state.gridX;
     const gridY = state.gridY;
-    const gridBoost = state.gridBoost;
+    const hBaseWidth = 1.35 * state.densityStrokeScale;
+    const vBaseWidth = 1.2 * state.densityStrokeScale;
 
-    // Horizontal
-    for (let iy = 0; iy < vLines; iy += step) {
-      ctx.beginPath();
-      let maxBoost = 0;
-      const rowOffset = iy * hLines;
-
-      for (let ix = 0; ix < hLines; ix += step) {
-        const idx = rowOffset + ix;
-        const x = gridX[idx];
-        const y = gridY[idx];
-        if (ix === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-
-        const boost = gridBoost[idx];
-        if (boost > maxBoost) maxBoost = boost;
+    function drawLines(horizontalStyle, verticalStyle, horizontalWidth, verticalWidth) {
+      // Horizontal
+      ctx.strokeStyle = horizontalStyle;
+      ctx.lineWidth = horizontalWidth;
+      for (let iy = 0; iy < vLines; iy += step) {
+        ctx.beginPath();
+        const rowOffset = iy * hLines;
+        for (let ix = 0; ix < hLines; ix += step) {
+          const idx = rowOffset + ix;
+          const x = gridX[idx];
+          const y = gridY[idx];
+          if (ix === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
       }
-      const alpha = clamp(
-        state.baseAlphaH + (CURSOR_FIELD_ALPHA - state.baseAlphaH) * maxBoost,
-        0,
-        CURSOR_FIELD_ALPHA
-      );
-      ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
-      ctx.lineWidth = 1.35 * state.densityStrokeScale;
-      ctx.stroke();
+
+      // Vertical
+      ctx.strokeStyle = verticalStyle;
+      ctx.lineWidth = verticalWidth;
+      for (let ix = 0; ix < hLines; ix += step) {
+        ctx.beginPath();
+        for (let iy = 0; iy < vLines; iy += step) {
+          const idx = iy * hLines + ix;
+          const x = gridX[idx];
+          const y = gridY[idx];
+          if (iy === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
     }
 
-    // Vertical
-    for (let ix = 0; ix < hLines; ix += step) {
-      ctx.beginPath();
-      let maxBoost = 0;
+    // Pass 1: fixed base brightness field.
+    drawLines(
+      `rgba(235,240,255,${state.baseAlphaH})`,
+      `rgba(235,240,255,${state.baseAlphaV})`,
+      hBaseWidth,
+      vBaseWidth
+    );
 
-      for (let iy = 0; iy < vLines; iy += step) {
-        const idx = iy * hLines + ix;
-        const x = gridX[idx];
-        const y = gridY[idx];
-        if (iy === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+    // Pass 2: cursor-local brightening with radial falloff tied to distortion radius.
+    const cursorX = state.pointer.x * state.w;
+    const cursorY = state.pointer.y * state.h;
+    const radius = Math.max(100, state.pointerRadius);
+    const extraH = clamp(CURSOR_FIELD_ALPHA - state.baseAlphaH, 0, 0.35);
+    const extraV = clamp(CURSOR_FIELD_ALPHA - state.baseAlphaV, 0, 0.35);
 
-        const boost = gridBoost[idx];
-        if (boost > maxBoost) maxBoost = boost;
-      }
-      const alpha = clamp(
-        state.baseAlphaV + (CURSOR_FIELD_ALPHA - state.baseAlphaV) * maxBoost,
-        0,
-        CURSOR_FIELD_ALPHA
+    if (extraH > 0.001 || extraV > 0.001) {
+      const horizontalGlow = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, radius);
+      const verticalGlow = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, radius);
+      const stops = [0, 0.25, 0.5, 0.75, 1];
+
+      stops.forEach((s) => {
+        const falloff = Math.exp(-2 * s * s);
+        const alphaH = s === 1 ? 0 : (extraH * falloff);
+        const alphaV = s === 1 ? 0 : (extraV * falloff);
+        horizontalGlow.addColorStop(s, `rgba(235,240,255,${alphaH})`);
+        verticalGlow.addColorStop(s, `rgba(235,240,255,${alphaV})`);
+      });
+
+      drawLines(
+        horizontalGlow,
+        verticalGlow,
+        hBaseWidth * 1.05,
+        vBaseWidth * 1.05
       );
-      ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
-      ctx.lineWidth = 1.2 * state.densityStrokeScale;
-      ctx.stroke();
     }
 
     ctx.restore();
