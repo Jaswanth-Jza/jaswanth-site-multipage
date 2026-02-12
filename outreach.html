@@ -11,6 +11,25 @@
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body data-field-preset="outreach">
+  <picture class="bg-photo" aria-hidden="true">
+  <source
+    type="image/webp"
+    srcset="
+      assets/img/galaxy-bg-768.webp 768w,
+      assets/img/galaxy-bg-1024.webp 1024w,
+      assets/img/galaxy-bg-1536.webp 1536w
+    "
+    sizes="100vw"
+  />
+  <img
+    src="assets/img/galaxy-bg-1024.webp"
+    alt=""
+    loading="eager"
+    decoding="async"
+    fetchpriority="high"
+  />
+</picture>
+
   <canvas id="field" aria-hidden="true"></canvas>
   <div class="bg-vignette" aria-hidden="true"></div>
 
