@@ -17,6 +17,45 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  function applyUI(state){
+  const ui = window.__FIELD_UI__;
+  if(!ui) return;
+
+  // B⊥ strength -> baseline alpha everywhere
+  if (ui.bperp != null){
+    const a = clamp(ui.bperp, 0.04, 0.30);
+    state.baseAlphaH = a;
+    state.baseAlphaV = a;
+  }
+
+  // Turbulence -> wave amplitudes
+  if (ui.turb != null){
+    const t = clamp(ui.turb, 6, 40);
+    state.amp  = t;
+    state.amp2 = t * 0.8;
+  }
+
+  // Coherence scale -> spatial frequency multiplier
+  if (ui.coh != null){
+    state.kScale = clamp(ui.coh, 0.4, 3.0);
+  }
+
+  // Wave activity -> time speed
+  if (ui.speed != null){
+    state.speed = clamp(ui.speed, 0.0002, 0.003);
+  }
+
+  // Emitting region size -> cursor brightening radius
+  if (ui.src != null){
+    state.boostRadius = clamp(ui.src, 120, 900);
+  }
+
+  // Shear / drift -> mouse deformation
+  if (ui.shear != null){
+    state.pointerStrength = clamp(ui.shear, 0.0, 0.6);
+  }
+}
+
 
   const state = {
     w: 0,
@@ -31,6 +70,7 @@
     step: 1,
 
     // Wave parameters (keep modest for uniform feel)
+    kScale: 1.0, // coherence scale multiplier for wave spatial frequency
     amp: 20,
     amp2: 16,
     speed: 0.00095,
@@ -120,9 +160,10 @@
     const ny = y0 / state.h;
 
     // smooth base waves (kept subtle)
-    const w1 = Math.sin((nx * 3.6 + t * 0.9) * Math.PI * 2) * state.amp * 0.2;
-    const w2 = Math.sin((ny * 2.3 + t * 1.2) * Math.PI * 2 + nx * 1.1) * state.amp2 * 0.3;
-    const w3 = Math.cos((nx * 1.4 + ny * 1.2 + t * 0.55) * Math.PI * 2) * (state.amp2 * 0.25);
+    const ks = state.kScale || 1.0;
+    const w1 = Math.sin(((nx * 3.6 * ks) + t * 0.9) * Math.PI * 2) * state.amp * 0.2;
+    const w2 = Math.sin(((ny * 2.3 * ks) + t * 1.2) * Math.PI * 2 + nx * 1.1 * ks) * state.amp2 * 0.3;
+    const w3 = Math.cos(((nx * 1.4 * ks) + (ny * 1.2 * ks) + t * 0.55) * Math.PI * 2) * (state.amp2 * 0.3);
 
     // Lorentz-like pointer drift (deformation)
     const px = state.pointer.x;
@@ -242,6 +283,7 @@
     state.pointer.vx *= state.pointerDamping;
     state.pointer.vy *= state.pointerDamping;
 
+    applyUI(state);
     clear();
     drawMesh(state.t);
 
@@ -254,6 +296,7 @@
   window.addEventListener('resize', resize, { passive: true });
 
   if (reduceMotion) {
+    applyUI(state);
     clear();
     drawMesh(0.18);
   } else {
