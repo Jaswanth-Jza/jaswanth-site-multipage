@@ -18,6 +18,8 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const BASE_FIELD_ALPHA = 0.05;   // quarter of prior slider max (0.20)
+  const CURSOR_FIELD_ALPHA = 0.20; // prior slider max brightness
 
   const state = {
     w: 0,
@@ -36,7 +38,6 @@
     densityScale: 1.0,
     viewportDensityScale: 1.0,
     densityStrokeScale: 1.0,
-    densityAlphaScale: 1.0,
     step: 1,
 
     // Wave parameters
@@ -53,11 +54,8 @@
     pointerFollow: 0.18,
 
     // Brightness (uniform baseline + cursor boost)
-    baseAlphaH: 0.12,
-    baseAlphaV: 0.12,
-    boostAlpha: 0.12,
-    boostRadius: 420,      // <-- brightening radius (fixed)
-    boostVelGain: 0.06,
+    baseAlphaH: BASE_FIELD_ALPHA,
+    baseAlphaV: BASE_FIELD_ALPHA,
 
     // Reused buffers for per-frame geometry and brightness calculations.
     gridX: null,
@@ -69,12 +67,12 @@
   const presetName = (document.body?.dataset?.fieldPreset) || 'home';
   const presets = {
     home: { hLines: 46, vLines: 22, amp: 20, amp2: 16 },
-    about: { hLines: 42, vLines: 20, amp: 16, amp2: 12, boostAlpha: 0.10 },
-    research: { hLines: 52, vLines: 26, amp: 22, amp2: 18, boostAlpha: 0.13 },
-    publications: { hLines: 44, vLines: 20, amp: 14, amp2: 10, baseAlphaH: 0.11, baseAlphaV: 0.11, boostAlpha: 0.10 },
+    about: { hLines: 42, vLines: 20, amp: 16, amp2: 12 },
+    research: { hLines: 52, vLines: 26, amp: 22, amp2: 18 },
+    publications: { hLines: 44, vLines: 20, amp: 14, amp2: 10 },
     outreach: { hLines: 46, vLines: 22, amp: 18, amp2: 14 },
-    music: { hLines: 46, vLines: 22, amp: 19, amp2: 15, boostAlpha: 0.14 },
-    contact: { hLines: 42, vLines: 20, amp: 14, amp2: 10, baseAlphaH: 0.11, baseAlphaV: 0.11, boostAlpha: 0.10 },
+    music: { hLines: 46, vLines: 22, amp: 19, amp2: 15 },
+    contact: { hLines: 42, vLines: 20, amp: 14, amp2: 10 },
   };
 
   (function applyPreset() {
@@ -85,9 +83,8 @@
   })();
 
   function updateDensityVisualScales() {
-    // Keep dense meshes readable without washing out the whole canvas.
+    // Keep dense meshes readable by thinning strokes slightly.
     state.densityStrokeScale = clamp(1 / Math.pow(state.densityScale, 0.35), 0.78, 1.14);
-    state.densityAlphaScale = clamp(1 / Math.sqrt(state.densityScale), 0.74, 1.10);
   }
 
   function applyMeshDensity() {
@@ -123,13 +120,6 @@
   function applyUI() {
     const ui = window.__FIELD_UI__;
     if (!ui) return;
-
-    // B⊥ strength -> baseline alpha everywhere
-    if (ui.bperp != null) {
-      const a = clamp(ui.bperp, 0.04, 0.30);
-      state.baseAlphaH = a;
-      state.baseAlphaV = a;
-    }
 
     // Turbulence -> wave amplitudes
     if (ui.turb != null) {
@@ -233,9 +223,6 @@
     const perpY = pvx;
 
     const pointerDen = 2 * state.pointerRadius * state.pointerRadius;
-    const boostPx = px * state.w;
-    const boostPy = py * state.h;
-    const boostDen = 2 * state.boostRadius * state.boostRadius;
 
     let idx = 0;
     for (let iy = 0; iy < state.vLines; iy++) {
@@ -268,10 +255,8 @@
 
         state.gridX[idx] = x;
         state.gridY[idx] = y;
-
-        const dx = x - boostPx;
-        const dy = y - boostPy;
-        state.gridBoost[idx] = Math.exp(-(dx * dx + dy * dy) / boostDen);
+        // Brightness uses the same radial influence as distortion.
+        state.gridBoost[idx] = pInfluence;
         idx++;
       }
     }
@@ -290,14 +275,10 @@
     const gridY = state.gridY;
     const gridBoost = state.gridBoost;
 
-    const v = Math.sqrt(state.pointer.vx * state.pointer.vx + state.pointer.vy * state.pointer.vy);
-    const velBoost = clamp(v * 10, 0, 1) * state.boostVelGain;
-
     // Horizontal
     for (let iy = 0; iy < vLines; iy += step) {
       ctx.beginPath();
-      let avgBoost = 0;
-      let count = 0;
+      let maxBoost = 0;
       const rowOffset = iy * hLines;
 
       for (let ix = 0; ix < hLines; ix += step) {
@@ -307,13 +288,14 @@
         if (ix === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
 
-        avgBoost += gridBoost[idx];
-        count++;
+        const boost = gridBoost[idx];
+        if (boost > maxBoost) maxBoost = boost;
       }
-
-      avgBoost = count ? (avgBoost / count) : 0;
-
-      const alpha = clamp((state.baseAlphaH + (state.boostAlpha + velBoost) * avgBoost) * state.densityAlphaScale, 0, 0.42);
+      const alpha = clamp(
+        state.baseAlphaH + (CURSOR_FIELD_ALPHA - state.baseAlphaH) * maxBoost,
+        0,
+        CURSOR_FIELD_ALPHA
+      );
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
       ctx.lineWidth = 1.35 * state.densityStrokeScale;
       ctx.stroke();
@@ -322,8 +304,7 @@
     // Vertical
     for (let ix = 0; ix < hLines; ix += step) {
       ctx.beginPath();
-      let avgBoost = 0;
-      let count = 0;
+      let maxBoost = 0;
 
       for (let iy = 0; iy < vLines; iy += step) {
         const idx = iy * hLines + ix;
@@ -332,13 +313,14 @@
         if (iy === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
 
-        avgBoost += gridBoost[idx];
-        count++;
+        const boost = gridBoost[idx];
+        if (boost > maxBoost) maxBoost = boost;
       }
-
-      avgBoost = count ? (avgBoost / count) : 0;
-
-      const alpha = clamp((state.baseAlphaV + (state.boostAlpha + velBoost) * avgBoost) * state.densityAlphaScale, 0, 0.42);
+      const alpha = clamp(
+        state.baseAlphaV + (CURSOR_FIELD_ALPHA - state.baseAlphaV) * maxBoost,
+        0,
+        CURSOR_FIELD_ALPHA
+      );
       ctx.strokeStyle = `rgba(235,240,255,${alpha})`;
       ctx.lineWidth = 1.2 * state.densityStrokeScale;
       ctx.stroke();
