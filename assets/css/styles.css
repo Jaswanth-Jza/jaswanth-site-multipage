@@ -452,6 +452,55 @@ h1{
   flex-wrap: wrap;
 }
 
+.streamIntro{
+  margin: 0 0 10px;
+}
+
+.streamGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.streamChip{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
+  color: rgba(233,238,247,.90);
+  font-size: 13px;
+  font-weight: 620;
+  text-decoration: none !important;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.streamChip:hover{
+  background: rgba(255,255,255,.09);
+  border-color: rgba(255,255,255,.26);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.streamChip--accent{
+  border-color: rgba(83,214,255,.38);
+  background: linear-gradient(180deg, rgba(83,214,255,.20), rgba(83,214,255,.10));
+}
+
+.streamFine{
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+@media (max-width: 560px){
+  .streamGrid{
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Mobile nav toggle (hamburger) */
 .navToggle{
   display:none;
