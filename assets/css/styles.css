@@ -532,20 +532,62 @@ h1{
 
 .fieldUI__toggle{
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(83,214,255,.35);
-  background: linear-gradient(180deg, rgba(83,214,255,.22), rgba(83,214,255,.12));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(83,214,255,.55);
+  background: linear-gradient(180deg, rgba(83,214,255,.26), rgba(83,214,255,.12));
   color: rgba(233,238,247,.98);
   font-weight: 700;
+  letter-spacing: .02em;
   cursor: pointer;
-  box-shadow: 0 12px 30px rgba(83,214,255,.14), inset 0 1px 0 rgba(255,255,255,.12);
+  box-shadow: 0 12px 30px rgba(83,214,255,.22), inset 0 1px 0 rgba(255,255,255,.12);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  transition: box-shadow .25s ease, border-color .25s ease, transform .15s ease;
 }
 
 .fieldUI__toggle:hover{
-  background: linear-gradient(180deg, rgba(83,214,255,.28), rgba(83,214,255,.16));
+  background: linear-gradient(180deg, rgba(83,214,255,.34), rgba(83,214,255,.18));
+  border-color: rgba(83,214,255,.8);
+  transform: translateY(-1px);
+}
+
+/* Animated field-wave icon inside the pill */
+.fieldUI__icon{
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+.fieldUI__icon span{
+  width: 3px;
+  border-radius: 2px;
+  background: rgba(83,214,255,.95);
+  animation: fieldWave 1.6s ease-in-out infinite;
+}
+.fieldUI__icon span:nth-child(1){ height: 7px;  animation-delay: 0s; }
+.fieldUI__icon span:nth-child(2){ height: 13px; animation-delay: .2s; }
+.fieldUI__icon span:nth-child(3){ height: 9px;  animation-delay: .4s; }
+.fieldUI__icon span:nth-child(4){ height: 12px; animation-delay: .6s; }
+@keyframes fieldWave{
+  0%, 100% { transform: scaleY(0.55); }
+  50%      { transform: scaleY(1.0); }
+}
+
+/* First-visit attention pulse (cleared once the visitor engages) */
+.fieldUI[data-attention="true"] .fieldUI__toggle{
+  animation: fieldPulse 2.2s ease-in-out infinite;
+}
+@keyframes fieldPulse{
+  0%, 100% { box-shadow: 0 12px 30px rgba(83,214,255,.22), 0 0 0 0 rgba(83,214,255,.45); }
+  50%      { box-shadow: 0 12px 34px rgba(83,214,255,.34), 0 0 0 12px rgba(83,214,255,0); }
+}
+@media (prefers-reduced-motion: reduce){
+  .fieldUI__icon span, .fieldUI[data-attention="true"] .fieldUI__toggle{ animation: none; }
 }
 
 .fieldUI__toggle:focus-visible{
@@ -586,4 +628,77 @@ h1{
   font-size: 12px;
   color: rgba(233,238,247,.62);
   line-height: 1.35;
+}
+
+/* ---------- Research journey bands ---------- */
+.journey{
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 10px;
+}
+.journey__band{
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 26px;
+  align-items: center;
+  padding: 26px 28px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(10,14,22,.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.journey__band:nth-child(even){
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+}
+.journey__band:nth-child(even) .journey__media{ order: 2; }
+.journey__band:nth-child(even) .journey__text{ order: 1; }
+.journey__media{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.journey__svg{
+  width: 100%;
+  height: auto;
+  max-width: 460px;
+  display: block;
+}
+.journey__era{
+  display: inline-block;
+  font-size: 12.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(83,214,255,.9);
+  margin-bottom: 8px;
+}
+.journey__text h2{
+  margin: 0 0 10px;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.15;
+}
+.journey__text p{
+  margin: 0 0 10px;
+  color: rgba(233,238,247,.88);
+  font-size: 15.5px;
+  line-height: 1.62;
+}
+@media (max-width: 860px){
+  .journey__band,
+  .journey__band:nth-child(even){
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px 18px;
+  }
+  .journey__band:nth-child(even) .journey__media{ order: 1; }
+  .journey__band:nth-child(even) .journey__text{ order: 2; }
+}
+
+/* Question lead-in for journey bands */
+.journey__q{
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-style: italic;
+  color: rgba(140,240,210,.85);
 }

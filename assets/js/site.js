@@ -92,11 +92,34 @@
     // Prevent global click handlers from interfering
     root.addEventListener('click', (e) => e.stopPropagation());
 
+    // First-visit attention: pulse the pill and peek the panel once per session.
+    const SEEN_KEY = 'fieldUISeen';
+    let seen = false;
+    try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (_) {}
+    function markSeen() {
+      if (seen) return;
+      seen = true;
+      root.dataset.attention = 'false';
+      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (_) {}
+    }
+    if (!seen) {
+      root.dataset.attention = 'true';
+      // brief peek: open after a beat, close again unless the visitor engages
+      const peekOpen = setTimeout(() => { if (!seen) setOpen(true); }, 1400);
+      const peekClose = setTimeout(() => {
+        if (!seen) setOpen(false);
+      }, 4600);
+      root.addEventListener('pointerdown', () => {
+        clearTimeout(peekOpen); clearTimeout(peekClose);
+      }, { once: true });
+    }
+
     toggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const open = root.dataset.open === "true";
       setOpen(!open);
+      markSeen();
     });
 
     inputs.forEach(inp => {

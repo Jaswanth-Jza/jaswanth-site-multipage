@@ -18,8 +18,8 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  const BASE_FIELD_ALPHA = 0.05;   // quarter of prior slider max (0.20)
-  const CURSOR_FIELD_ALPHA = 0.28; // boosted cursor peak brightness
+  const BASE_FIELD_ALPHA = 0.11;   // brightened baseline grid (was 0.05)
+  const CURSOR_FIELD_ALPHA = 0.34; // boosted cursor peak brightness
 
   const state = {
     w: 0,

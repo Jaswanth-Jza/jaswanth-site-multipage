@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#070A0F" />
   <title>Research | Jaswanth Subramanyam</title>
-  <meta name="description" content="Research — cosmic magnetism, radio polarimetry, Faraday rotation, and the magnetoionic universe." />
+  <meta name="description" content="Research — resolved Faraday rotation of radio galaxies, resolution-aware RM statistics, depolarisation of Faraday-complex lobes, and intervening magnetised gas." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ffffff' d='M32 4l4.5 14.2H52L39.7 27l4.6 14.1L32 32.8 19.7 41.1 24.3 27 12 18.2h15.5z'/%3E%3C/svg%3E">
 
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -32,7 +32,8 @@
   <canvas id="field" aria-hidden="true"></canvas>
   <div class="fieldUI" data-open="false">
   <button class="fieldUI__toggle" type="button" aria-expanded="false">
-    Field Controls
+    <span class="fieldUI__icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    Tune the field
   </button>
 
   <div class="fieldUI__panel">
@@ -105,7 +106,9 @@
       <div class="container">
         <h1 class="pageTitle__h1">Research</h1>
         <p class="muted pageTitle__lede">
-          Cosmic magnetism, radio polarimetry, and Faraday rotation — using polarised signals to infer magnetic fields and plasma.
+          I study the invisible magnetic fields that thread galaxies, using the polarised radio light
+          of giant radio galaxies. The road here ran through particle instruments, the atmosphere,
+          and a gravitational lens. This page is the short tour.
         </p>
       </div>
     </section>
@@ -114,7 +117,7 @@
       <div class="container">
         <div class="researchViz">
           <p class="muted">
-            A few simple visual building blocks that sit behind radio polarimetry and magnetoionic diagnostics. (All animations rendered in GeoGebra)
+            The physics under all of it, in three animations I made in GeoGebra: charged particles spiralling around magnetic fields make polarised radio light, and magnetised gas twists that light on its way to us.
           </p>
 
           <div class="vizGrid">
@@ -168,46 +171,226 @@
           </div>
         </div>
 
-        <div class="cards" style="margin-top:14px;">
-          <article class="card glass">
-            <h3 class="h4">Intervening magnetoionic medium via Mg&nbsp;II absorbers</h3>
-            <p>
-              Polarimetric sightline studies isolating residual Faraday rotation of background sources to
-              constrain galactic halo magnetization.
-            </p>
-            <div class="tags">
-              <span class="tag">VLA</span>
-              <span class="tag">L/S band</span>
-              <span class="tag">RM</span>
-            </div>
-          </article>
+        <div class="journey">
 
-          <article class="card glass">
-            <h3 class="h4">Spatial RM statistics of resolved radio lobes</h3>
-            <p>
-              Resolution-aware spatial analysis with robust error propagation to support
-              survey-ready validation for next-generation wide-field polarimetry.
-            </p>
-            <div class="tags">
-              <span class="tag">Bootstrap</span>
-              <span class="tag">Beam correlation</span>
-              <span class="tag">Error propagation</span>
-            </div>
-          </article>
+          <section class="journey__band">
+            <div class="journey__media">
+              <svg class="journey__svg" viewBox="0 0 440 300" role="img" aria-label="Sketch: polarised light leaves a double-lobed radio galaxy, its polarisation rotates while crossing magnetised gas, and a telescope measures the twist.">
+                <!-- radio galaxy: host disc, jets, plume lobes with hotspots -->
+                <path d="M 72 118 C 42 110, 28 82, 38 60 C 48 40, 96 40, 106 60 C 116 82, 102 110, 72 118 Z"
+                      fill="rgba(83,214,255,.12)" stroke="rgba(83,214,255,.8)" stroke-width="1.5"/>
+                <path d="M 72 182 C 42 190, 28 218, 38 240 C 48 260, 96 260, 106 240 C 116 218, 102 190, 72 182 Z"
+                      fill="rgba(83,214,255,.12)" stroke="rgba(83,214,255,.8)" stroke-width="1.5"/>
+                <ellipse cx="72" cy="80" rx="23" ry="16" fill="rgba(83,214,255,.09)"/>
+                <ellipse cx="72" cy="80" rx="14" ry="10.5" fill="rgba(83,214,255,.17)"/>
+                <ellipse cx="72" cy="80" rx="7" ry="5" fill="rgba(83,214,255,.34)"/>
+                <ellipse cx="72" cy="220" rx="23" ry="16" fill="rgba(83,214,255,.09)"/>
+                <ellipse cx="72" cy="220" rx="14" ry="10.5" fill="rgba(83,214,255,.17)"/>
+                <ellipse cx="72" cy="220" rx="7" ry="5" fill="rgba(83,214,255,.34)"/>
+                <path d="M 72 143 C 69 136, 75 130, 72 121" fill="none" stroke="rgba(140,240,210,.9)" stroke-width="2"/>
+                <path d="M 72 157 C 75 164, 69 170, 72 179" fill="none" stroke="rgba(140,240,210,.9)" stroke-width="2"/>
+                <ellipse cx="72" cy="150" rx="13" ry="4.5" transform="rotate(-28 72 150)"
+                         fill="rgba(233,238,247,.25)" stroke="rgba(233,238,247,.6)" stroke-width="1"/>
+                <circle cx="72" cy="150" r="2.6" fill="#8CF0D2"/>
+                <text x="34" y="273" fill="rgba(233,238,247,.6)" font-size="12">radio galaxy</text>
 
-          <article class="card glass">
-            <h3 class="h4">Gravitational lensing: PKS&nbsp;1830−211</h3>
-            <p>
-              Geometric modeling to separate intrinsic source physics from lens magnification, including
-              work enabling the ALMA detection of the third image.
-            </p>
-            <div class="tags">
-              <span class="tag">ALMA</span>
-              <span class="tag">Lens modeling</span>
-              <span class="tag">Polarimetry</span>
+                <!-- light ray from the top lobe to the telescope -->
+                <line x1="112" y1="110" x2="376" y2="110" stroke="rgba(233,238,247,.35)" stroke-width="1.2" stroke-dasharray="2 6"/>
+
+                <!-- magnetised gas cloud mid-path -->
+                <ellipse cx="252" cy="110" rx="52" ry="34" fill="rgba(140,240,210,.10)" stroke="rgba(140,240,210,.6)" stroke-width="1.2" stroke-dasharray="4 4"/>
+                <text x="212" y="62" fill="rgba(140,240,210,.85)" font-size="12">magnetised gas</text>
+
+                <!-- polarisation bars rotating along the way -->
+                <g stroke="#FF7AC8" stroke-width="3" stroke-linecap="round">
+                  <line x1="146" y1="95" x2="146" y2="125"/>
+                  <line x1="192" y1="95" x2="192" y2="125"/>
+                  <line x1="238" y1="97.5" x2="250" y2="122.5"/>
+                  <line x1="277" y1="101.5" x2="299" y2="118.5"/>
+                  <line x1="326" y1="106.5" x2="352" y2="113.5"/>
+                </g>
+                <!-- rotation cue around the third bar -->
+                <path d="M 294.0 116.7 A 14 14 0 1 0 301.8 92.1" fill="none" stroke="rgba(255,122,200,.55)" stroke-width="1.4"/>
+                <path d="M -6 -4 L 6.5 0 L -6 4 Z" transform="translate(301.8 92.1) rotate(175.0)" fill="rgba(255,122,200,.7)"/>
+                <text x="128" y="146" fill="rgba(255,122,200,.8)" font-size="12">polarised light</text>
+                <text x="300" y="146" fill="rgba(255,122,200,.8)" font-size="12">the plane twists</text>
+
+                <!-- telescope dish (right) -->
+                <path d="M 382 96 A 17 17 0 0 0 396 128" fill="rgba(15,18,28,.9)" stroke="rgba(233,238,247,.75)" stroke-width="1.6"/>
+                <line x1="392" y1="126" x2="398" y2="146" stroke="rgba(233,238,247,.65)" stroke-width="1.6"/>
+                <line x1="398" y1="146" x2="386" y2="146" stroke="rgba(233,238,247,.65)" stroke-width="1.6"/>
+                <text x="362" y="168" fill="rgba(233,238,247,.6)" font-size="12">telescope</text>
+
+                <!-- takeaway line -->
+                <text x="120" y="292" fill="rgba(233,238,247,.55)" font-size="12">more twist = more magnetised gas along the way</text>
+              </svg>
             </div>
-          </article>
+            <div class="journey__text">
+              <span class="journey__era">PhD &middot; MPIfR &amp; University of Bonn &middot; 2021&ndash;present</span>
+              <p class="journey__q">How do you map a magnetic field that no telescope can photograph?</p>
+              <h2>Magnetic fields around giant radio galaxies</h2>
+              <p>
+                Some galaxies launch jets that inflate two enormous lobes of radio-bright plasma, and
+                the light from those lobes is polarised. Magnetised gas along the way twists that
+                polarisation, and the twist grows with wavelength, so the twist itself becomes a map
+                of fields we could never photograph. I make and read these maps across each lobe,
+                with statistics that respect what a radio telescope can and cannot resolve.
+              </p>
+              <p>
+                The same data ask a second question from the opposite direction: when the light of a
+                distant source passes close to an ordinary galaxy on its way to us, does the gas
+                around that galaxy leave a measurable magnetic fingerprint?
+              </p>
+              <div class="tags">
+                <span class="tag">VLA</span>
+                <span class="tag">Radio polarimetry</span>
+                <span class="tag">Faraday rotation</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="journey__band">
+            <div class="journey__media">
+              <svg class="journey__svg" viewBox="0 0 440 300" role="img" aria-label="Sketch of gravitational lensing: light from a quasar bends around a foreground galaxy, forming multiple images.">
+                <g fill="#FF7AC8">
+                  <path d="M50 138 l4 9 9 3 -9 3 -4 9 -4 -9 -9 -3 9 -3 z"/>
+                </g>
+                <circle cx="50" cy="150" r="14" fill="rgba(255,122,200,.15)"/>
+                <line x1="64" y1="150" x2="386" y2="150" stroke="rgba(255,122,200,.30)" stroke-width="1.2" stroke-dasharray="3 6"/>
+                <path d="M58 148 C 140 96, 190 92, 218 96 C 300 104, 360 132, 392 148" fill="none" stroke="rgba(83,214,255,.85)" stroke-width="1.8"/>
+                <path d="M58 152 C 140 204, 190 208, 218 204 C 300 196, 360 168, 392 152" fill="none" stroke="rgba(83,214,255,.85)" stroke-width="1.8"/>
+                <ellipse cx="220" cy="150" rx="27" ry="13" transform="rotate(-24 220 150)" fill="rgba(140,240,210,.16)" stroke="rgba(140,240,210,.8)" stroke-width="1.4"/>
+                <ellipse cx="220" cy="150" rx="48" ry="30" fill="none" stroke="rgba(140,240,210,.3)" stroke-width="1" stroke-dasharray="2 5"/>
+                <circle cx="218" cy="96" r="4.5" fill="#FF7AC8"/>
+                <text x="232" y="93" fill="rgba(255,122,200,.85)" font-size="11">image A</text>
+                <circle cx="218" cy="204" r="4.5" fill="#FF7AC8"/>
+                <text x="232" y="216" fill="rgba(255,122,200,.85)" font-size="11">image B</text>
+                <circle cx="252" cy="150" r="2.8" fill="rgba(255,122,200,.85)"/>
+                <path d="M -7 -4.5 L 7 0 L -7 4.5 Z" transform="translate(332.3 122.0) rotate(20)" fill="rgba(83,214,255,.85)"/>
+                <path d="M -7 -4.5 L 7 0 L -7 4.5 Z" transform="translate(332.3 178.0) rotate(-20)" fill="rgba(83,214,255,.85)"/>
+                <circle cx="400" cy="150" r="8" fill="none" stroke="rgba(233,238,247,.8)" stroke-width="1.6"/>
+                <circle cx="400" cy="150" r="2.6" fill="rgba(233,238,247,.9)"/>
+                <text x="26" y="126" fill="rgba(233,238,247,.6)" font-size="12">quasar</text>
+                <text x="196" y="182" fill="rgba(233,238,247,.6)" font-size="12">lens galaxy</text>
+                <text x="381" y="176" fill="rgba(233,238,247,.6)" font-size="12">us</text>
+                <text x="116" y="292" fill="rgba(233,238,247,.55)" font-size="12">one quasar, three separate paths to us</text>
+                <text x="260" y="142" fill="rgba(255,122,200,.85)" font-size="11">third image (faint)</text>
+              </svg>
+            </div>
+            <div class="journey__text">
+              <span class="journey__era">Master&rsquo;s &middot; Chalmers University &middot; 2017&ndash;2019</span>
+              <p class="journey__q">Can a whole galaxy work as the lens of a telescope?</p>
+              <h2>A cosmic lens with three images</h2>
+              <p>
+                A massive galaxy sitting between us and a distant quasar bends the quasar&rsquo;s light
+                like a lens, splitting it into several images of the same object. My master&rsquo;s thesis
+                modelled the geometry of one such system, PKS&nbsp;1830&minus;211, and that model helped
+                pinpoint and confirm its faint third image with the ALMA telescope
+                (Muller, Jaswanth et al. 2020).
+              </p>
+              <div class="tags">
+                <span class="tag">Gravitational lensing</span>
+                <span class="tag">ALMA</span>
+                <span class="tag">Quasars</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="journey__band">
+            <div class="journey__media">
+              <svg class="journey__svg" viewBox="0 0 440 300" role="img" aria-label="Sketch of atmospheric measurements: a lidar beam probes the boundary layer while GPS signals reach a ground receiver.">
+                <rect x="0" y="170" width="440" height="92" fill="rgba(83,214,255,.06)"/>
+                <line x1="0" y1="170" x2="440" y2="170" stroke="rgba(83,214,255,.5)" stroke-width="1.2" stroke-dasharray="6 6"/>
+                <line x1="0" y1="262" x2="440" y2="262" stroke="rgba(233,238,247,.4)" stroke-width="1.5"/>
+                <line x1="120" y1="246" x2="120" y2="56" stroke="rgba(83,214,255,.18)" stroke-width="8"/>
+                <line x1="120" y1="246" x2="120" y2="56" stroke="rgba(83,214,255,.9)" stroke-width="2"/>
+                <rect x="106" y="246" width="28" height="16" fill="rgba(15,18,28,.9)" stroke="rgba(233,238,247,.6)"/>
+                <g fill="rgba(233,238,247,.55)">
+                  <circle cx="112" cy="228" r="1.8"/><circle cx="129" cy="214" r="1.8"/><circle cx="111" cy="196" r="1.8"/>
+                  <circle cx="130" cy="186" r="1.8"/><circle cx="112" cy="176" r="1.8"/><circle cx="97" cy="205" r="1.8"/>
+                  <circle cx="143" cy="232" r="1.8"/><circle cx="88" cy="238" r="1.8"/><circle cx="152" cy="196" r="1.8"/>
+                </g>
+                <g transform="translate(330,52)">
+                  <rect x="-8" y="-8" width="16" height="16" fill="none" stroke="rgba(233,238,247,.85)" stroke-width="1.5"/>
+                  <rect x="-30" y="-5" width="18" height="10" fill="rgba(83,214,255,.35)" stroke="rgba(83,214,255,.7)" stroke-width="1"/>
+                  <rect x="12" y="-5" width="18" height="10" fill="rgba(83,214,255,.35)" stroke="rgba(83,214,255,.7)" stroke-width="1"/>
+                </g>
+                <polyline points="330,68 318,120 308,176 300,250" fill="none" stroke="rgba(140,240,210,.8)" stroke-width="1.6" stroke-dasharray="5 5"/>
+                <path d="M288 262 a12 12 0 0 1 24 0 z" fill="rgba(15,18,28,.9)" stroke="rgba(233,238,247,.6)" stroke-width="1.3"/>
+                <g fill="rgba(140,240,210,.5)">
+                  <circle cx="262" cy="150" r="3"/><circle cx="286" cy="122" r="2.4"/><circle cx="342" cy="150" r="2.7"/>
+                  <circle cx="310" cy="205" r="2.4"/><circle cx="356" cy="196" r="2.2"/>
+                </g>
+                <text x="132" y="162" fill="rgba(233,238,247,.6)" font-size="12">top of the mixing layer</text>
+                <text x="96" y="286" fill="rgba(233,238,247,.6)" font-size="12">lidar</text>
+                <text x="276" y="286" fill="rgba(233,238,247,.6)" font-size="12">GPS receiver</text>
+              </svg>
+            </div>
+            <div class="journey__text">
+              <span class="journey__era">Scientist/Engineer &middot; NARL, ISRO &middot; 2014&ndash;2017</span>
+              <p class="journey__q">How do you weigh the water in the sky?</p>
+              <h2>Reading the atmosphere with lasers and satellites</h2>
+              <p>
+                Before astronomy, I studied the atmosphere itself at ISRO&rsquo;s National Atmospheric
+                Research Laboratory. A lidar fires laser pulses upward and times the faint echoes off
+                dust, tracing how the mixing layer, the lowest and most stirred part of the
+                atmosphere, grows and collapses through the day. And GPS satellites double as weather instruments: moisture in the air delays
+                their signals ever so slightly, so a network of ground receivers becomes a
+                round-the-clock monitor of the water vapour overhead.
+              </p>
+              <div class="tags">
+                <span class="tag">Lidar</span>
+                <span class="tag">GPS meteorology</span>
+                <span class="tag">Mixing layer</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="journey__band">
+            <div class="journey__media">
+              <svg class="journey__svg" viewBox="0 0 440 300" role="img" aria-label="Sketch of a parallel-plate analyser: charged particles curve between two plates and only the selected ones reach the detector.">
+                <rect x="110" y="84" width="210" height="9" fill="rgba(233,238,247,.14)" stroke="rgba(233,238,247,.5)" stroke-width="1"/>
+                <rect x="110" y="207" width="210" height="9" fill="rgba(233,238,247,.14)" stroke="rgba(233,238,247,.5)" stroke-width="1"/>
+                <text x="328" y="93" fill="rgba(233,238,247,.55)" font-size="13">+</text>
+                <text x="328" y="219" fill="rgba(233,238,247,.55)" font-size="13">&minus;</text>
+                <line x1="34" y1="150" x2="104" y2="150" stroke="rgba(233,238,247,.7)" stroke-width="1.6"/>
+                <path d="M104 150 l-8 -4 v8 z" fill="rgba(233,238,247,.7)"/>
+                <path d="M110 150 Q 215 122 318 108" fill="none" stroke="rgba(255,122,200,.55)" stroke-width="1.6" stroke-dasharray="4 4"/>
+                <circle cx="318" cy="108" r="3" fill="rgba(255,122,200,.6)"/>
+                <path d="M110 150 Q 215 196 300 212" fill="none" stroke="rgba(255,122,200,.55)" stroke-width="1.6" stroke-dasharray="4 4"/>
+                <circle cx="300" cy="212" r="3" fill="rgba(255,122,200,.6)"/>
+                <path d="M110 150 Q 220 158 388 150" fill="none" stroke="#53D6FF" stroke-width="2.2"/>
+                <rect x="388" y="134" width="26" height="32" rx="4" fill="rgba(83,214,255,.12)" stroke="rgba(83,214,255,.8)" stroke-width="1.4"/>
+                <text x="30" y="136" fill="rgba(233,238,247,.6)" font-size="12">particles in</text>
+                <text x="356" y="186" fill="rgba(233,238,247,.6)" font-size="12">detector</text>
+                <text x="168" y="248" fill="rgba(233,238,247,.55)" font-size="12">only the right energy gets through</text>
+              </svg>
+            </div>
+            <div class="journey__text">
+              <span class="journey__era">Bachelor&rsquo;s &middot; IIST &middot; 2010&ndash;2014</span>
+              <p class="journey__q">How does an instrument tell one atom from another?</p>
+              <h2>Where it started: instruments and signals</h2>
+              <p>
+                My bachelor&rsquo;s at the Indian Institute of Space Science and Technology was hands-on:
+                assembling and testing a particle analyser, the part of a mass spectrometer that sorts
+                charged particles by their energy so the instrument can tell atoms apart. A separate
+                project tied data encryption to GPS location, so that a file could be unlocked only
+                at the right place on Earth.
+              </p>
+              <div class="tags">
+                <span class="tag">Instrumentation</span>
+                <span class="tag">Mass spectrometry</span>
+                <span class="tag">GPS</span>
+              </div>
+            </div>
+          </section>
+
         </div>
+
+        <p class="muted" style="margin:18px 0 0; font-size:14.5px;">
+          The animated grid behind this page is a visual toy, not a simulation.
+          If you feel like playing with it, open <em>Tune the field</em> in the corner.
+        </p>
       </div>
     </section>
 
